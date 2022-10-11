@@ -2,18 +2,20 @@ use core::slice;
 
 #[derive(Debug)]
 pub struct Vector {
-    arr: Vec<f64>
+    arr: Vec<f64>,
+    size: usize
 }
 
 impl Vector {
     pub fn new(arr: &[f64]) -> Vector {
-        Vector { arr: arr.to_owned() }
+        Vector { arr: arr.to_owned(), size: arr.len() }
     }
 
     pub fn full(size: usize, value: f64) -> Vector {
         let mut arr = Vec::new();
         arr.resize(size, value);
-        Vector { arr }
+        let size = arr.len();
+        Vector { arr, size }
     }
 
     pub fn zeros(size: usize) -> Vector {
@@ -27,7 +29,8 @@ impl Vector {
     pub fn full_like(v: &Vector, value: f64) -> Vector {
         let mut arr = Vec::new();
         arr.resize(v.size(), value);
-        Vector { arr }
+        let size = arr.len();
+        Vector { arr, size }
     }
 
     pub fn zeros_like(v: &Vector) -> Vector {
@@ -39,7 +42,7 @@ impl Vector {
     }
 
     pub fn size(&self) -> usize {
-        self.arr.len()
+        self.size
     }
 
     pub fn iter(&self) -> slice::Iter<f64> {
