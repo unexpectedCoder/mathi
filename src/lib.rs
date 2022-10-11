@@ -59,6 +59,17 @@ impl Vector {
     pub fn is_zero(&self) -> bool {
         Self::isclose(self, 0., None)
     }
+
+    pub fn all<F>(v1: &Vector, v2: &Vector, expr: F) -> bool
+        where F: Fn(f64, f64) -> bool
+    {
+        for (a, b) in v1.arr.iter().zip(v2.arr.iter()) {
+            if !expr(*a, *b) {
+                return false;
+            }
+        }
+        true
+    }
 }
 
 #[cfg(test)]
@@ -145,5 +156,41 @@ mod vector_tests {
         assert!(zeros.is_zero());
         let non_zeros = Vector::new(&[-3.5, -7., 0.5]);
         assert!(!non_zeros.is_zero());
+    }
+
+    #[test]
+    fn test_all_less() {
+        let v1 = Vector::new(&[1., 2., -3.5]);
+        let v2 = Vector::new(&[2., 5., -1.25]);
+        assert!(Vector::all(&v1, &v2, |a, b| a < b));   // true
+        assert!(!Vector::all(&v1, &v2, |a, b| a == b));
+        assert!(!Vector::all(&v1, &v2, |a, b| a > b));
+    }
+
+    #[test]
+    fn test_all_eq() {
+        let v1 = Vector::new(&[1., 2., -3.5]);
+        let v2 = Vector::new(&[1., 2., -3.5]);
+        assert!(Vector::all(&v1, &v2, |a, b| a == b));   // true
+        assert!(!Vector::all(&v1, &v2, |a, b| a < b));
+        assert!(!Vector::all(&v1, &v2, |a, b| a > b));
+    }
+
+    #[test]
+    fn test_all_greater() {
+        let v1 = Vector::new(&[1., 2., -3.5]);
+        let v2 = Vector::new(&[0., 0., -5.7]);
+        assert!(Vector::all(&v1, &v2, |a, b| a > b));   // true
+        assert!(!Vector::all(&v1, &v2, |a, b| a == b));
+        assert!(!Vector::all(&v1, &v2, |a, b| a < b));
+    }
+
+    #[test]
+    fn test_all_ne() {
+        let v1 = Vector::new(&[1., 2., -3.5]);
+        let v2 = Vector::new(&[0., -2.3, 5.7]);
+        assert!(Vector::all(&v1, &v2, |a, b| a != b));   // true
+        assert!(!Vector::all(&v1, &v2, |a, b| a < b));
+        assert!(!Vector::all(&v1, &v2, |a, b| a > b));
     }
 }
