@@ -10,6 +10,12 @@ impl Vector {
         Vector { arr: arr.to_owned() }
     }
 
+    pub fn zeros(size: &usize) -> Vector {
+        let mut v = Vec::new();
+        v.resize(*size, 0.);
+        Vector { arr: v }
+    }
+
     pub fn size(&self) -> usize {
         self.arr.len()
     }
@@ -40,6 +46,14 @@ mod tests {
         for (vi, ai) in v.iter().zip(&arr) {
             assert_eq!(vi, ai);
         }
+    }
+
+    #[test]
+    fn test_zeros() {
+        let size = 5;
+        let zv = Vector::zeros(&size);
+        assert_eq!(zv.size(), size);
+        assert!(Vector::isclose(&zv, 0., None));
     }
 
     #[test]
