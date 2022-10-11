@@ -10,16 +10,18 @@ impl Vector {
         Vector { arr: arr.to_owned() }
     }
 
-    pub fn zeros(size: &usize) -> Vector {
+    pub fn full(size: &usize, value: &f64) -> Vector {
         let mut arr = Vec::new();
-        arr.resize(*size, 0.);
+        arr.resize(*size, *value);
         Vector { arr }
     }
 
+    pub fn zeros(size: &usize) -> Vector {
+        Self::full(size, &0.)
+    }
+
     pub fn ones(size: &usize) -> Vector {
-        let mut arr = Vec::new();
-        arr.resize(*size, 1.);
-        Vector { arr }
+        Self::full(size, &1.)
     }
 
     pub fn size(&self) -> usize {
@@ -55,10 +57,18 @@ mod tests {
     }
 
     #[test]
+    fn test_full() {
+        let size = 5;
+        let value = 17.33;
+        let v = Vector::full(&size, &value);
+        assert!(Vector::isclose(&v, value, None));
+        assert_eq!(v.size(), size);
+    }
+
+    #[test]
     fn test_zeros() {
         let size = 5;
         let zv = Vector::zeros(&size);
-        assert_eq!(zv.size(), size);
         assert!(Vector::isclose(&zv, 0., None));
     }
 
