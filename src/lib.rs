@@ -30,6 +30,10 @@ impl Vector {
         Vector { arr }
     }
 
+    pub fn zeros_like(v: &Vector) -> Vector {
+        Self::full_like(v, 0.)
+    }
+
     pub fn ones_like(v: &Vector) -> Vector {
         Self::full_like(v, 1.)
     }
@@ -95,6 +99,14 @@ mod vector_tests {
         let value = -1.5;
         let new_v = Vector::full_like(&v, value);
         assert!(Vector::isclose(&new_v, value, None));
+        assert_eq!(new_v.size(), v.size());
+    }
+
+    #[test]
+    fn test_zeros_like() {
+        let v = Vector::new(&[-1., 2., 3.]);
+        let new_v = Vector::zeros_like(&v);
+        assert!(Vector::isclose(&new_v, 0., None));
         assert_eq!(new_v.size(), v.size());
     }
 
