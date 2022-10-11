@@ -60,15 +60,37 @@ impl Vector {
         Self::isclose(self, 0., None)
     }
 
-    pub fn all<F>(v1: &Vector, v2: &Vector, expr: F) -> bool
-        where F: Fn(f64, f64) -> bool
+    pub fn compare<F>(v1: &Vector, v2: &Vector, condition: F) -> Vec<bool>
+        where F: Fn(&f64, &f64) -> bool
     {
-        for (a, b) in v1.arr.iter().zip(v2.arr.iter()) {
-            if !expr(*a, *b) {
+        let mut res = Vec::new();
+        res.resize(v1.size(), false);
+        for (i, (ai, bi))
+            in v1.arr.iter().zip(v2.arr.iter()).enumerate()
+        {
+            res[i] = condition(ai, bi);
+        }
+        res
+    }
+
+    pub fn all(v: &[bool]) -> bool
+    {
+        for flag in v {
+            if !*flag {
                 return false;
             }
         }
         true
+    }
+
+    pub fn any(v: &[bool]) -> bool
+    {
+        for flag in v {
+            if *flag {
+                return true;
+            }
+        }
+        false
     }
 }
 
@@ -159,38 +181,123 @@ mod vector_tests {
     }
 
     #[test]
-    fn test_all_less() {
+    fn test_all() {
+        let mut flags = vec![true, true, true];
+        assert!(Vector::all(&flags));
+        flags[1] = false;
+        assert!(!Vector::all(&flags));
+    }
+
+    #[test]
+    fn test_any() {
+        let mut flags = vec![false, true, false];
+        assert!(Vector::any(&flags));
+        flags[1] = false;
+        assert!(!Vector::any(&flags));
+    }
+
+    #[test]
+    fn test_compare() {
         let v1 = Vector::new(&[1., 2., -3.5]);
         let v2 = Vector::new(&[2., 5., -1.25]);
-        assert!(Vector::all(&v1, &v2, |a, b| a < b));   // true
-        assert!(!Vector::all(&v1, &v2, |a, b| a == b));
-        assert!(!Vector::all(&v1, &v2, |a, b| a > b));
+        let res = 
+            Vector::compare(&v1, &v2, |a, b| a < b);
+        assert!(Vector::all(&res));
+        let res = 
+            Vector::compare(&v1, &v2, |a, b| a == b);
+        assert!(!Vector::all(&res));
+        let res = 
+            Vector::compare(&v1, &v2, |a, b| a > b);
+        assert!(!Vector::all(&res));
     }
 
     #[test]
-    fn test_all_eq() {
+    fn test_compare_all_less() {
+        let v1 = Vector::new(&[1., 2., -3.5]);
+        let v2 = Vector::new(&[2., 5., -1.25]);
+        let flags =
+            Vector::compare(&v1, &v2, |a, b| a < b);
+        assert!(Vector::all(&flags));
+        let flags =
+            Vector::compare(&v1, &v2, |a, b| a == b);
+        assert!(!Vector::all(&flags));
+        let flags =
+            Vector::compare(&v1, &v2, |a, b| a > b);
+        assert!(!Vector::all(&flags));
+        let flags =
+            Vector::compare(&v1, &v2, |a, b| a != b);
+        assert!(Vector::all(&flags));
+    }
+
+    #[test]
+    fn test_compare_all_eq() {
         let v1 = Vector::new(&[1., 2., -3.5]);
         let v2 = Vector::new(&[1., 2., -3.5]);
-        assert!(Vector::all(&v1, &v2, |a, b| a == b));   // true
-        assert!(!Vector::all(&v1, &v2, |a, b| a < b));
-        assert!(!Vector::all(&v1, &v2, |a, b| a > b));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a == b);
+        assert!(Vector::all(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a < b);
+        assert!(!Vector::all(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a > b);
+        assert!(!Vector::all(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a != b);
+        assert!(!Vector::all(&res));
     }
 
     #[test]
-    fn test_all_greater() {
+    fn test_compare_all_greater() {
         let v1 = Vector::new(&[1., 2., -3.5]);
         let v2 = Vector::new(&[0., 0., -5.7]);
-        assert!(Vector::all(&v1, &v2, |a, b| a > b));   // true
-        assert!(!Vector::all(&v1, &v2, |a, b| a == b));
-        assert!(!Vector::all(&v1, &v2, |a, b| a < b));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a > b);
+        assert!(Vector::all(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a != b);
+        assert!(Vector::all(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a < b);
+        assert!(!Vector::all(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a == b);
+        assert!(!Vector::all(&res));
     }
 
     #[test]
-    fn test_all_ne() {
+    fn test_compare_all_ne() {
         let v1 = Vector::new(&[1., 2., -3.5]);
         let v2 = Vector::new(&[0., -2.3, 5.7]);
-        assert!(Vector::all(&v1, &v2, |a, b| a != b));   // true
-        assert!(!Vector::all(&v1, &v2, |a, b| a < b));
-        assert!(!Vector::all(&v1, &v2, |a, b| a > b));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a != b);
+        assert!(Vector::all(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a == b);
+        assert!(!Vector::all(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a > b);
+        assert!(!Vector::all(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a < b);
+        assert!(!Vector::all(&res));
+    }
+
+    #[test]
+    fn test_compare_any() {
+        let v1 = Vector::new(&[1., 2., -3.5]);
+        let v2 = Vector::new(&[0., 2., -5.7]);
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a == b);
+        assert!(Vector::any(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a > b);
+        assert!(Vector::any(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a < b);
+        assert!(!Vector::any(&res));
+        let res =
+            Vector::compare(&v1, &v2, |a, b| a != b);
+        assert!(Vector::any(&res));
     }
 }
