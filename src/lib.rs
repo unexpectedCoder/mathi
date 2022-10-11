@@ -10,6 +10,10 @@ impl Vector {
         Vector { arr: arr.to_owned() }
     }
 
+    pub fn size(&self) -> usize {
+        self.arr.len()
+    }
+
     pub fn iter(&self) -> slice::Iter<f64> {
         self.arr.iter()
     }
@@ -36,6 +40,12 @@ mod tests {
         for (vi, ai) in v.iter().zip(&arr) {
             assert_eq!(vi, ai);
         }
+    }
+
+    #[test]
+    fn test_size() {
+        let v = Vector::new(&[1., 2., 3.]);
+        assert_eq!(v.size(), 3);
     }
 
     #[test]
