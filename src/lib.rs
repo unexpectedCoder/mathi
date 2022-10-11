@@ -55,6 +55,10 @@ impl Vector {
         }
         true
     }
+
+    pub fn is_zero(&self) -> bool {
+        Self::isclose(self, 0., None)
+    }
 }
 
 #[cfg(test)]
@@ -133,5 +137,13 @@ mod vector_tests {
         assert!(!Vector::isclose(&v, val, Some(1e-3)));
         let v = Vector::new(&[val, val, 3. * (val / 3.)]);
         assert!(Vector::isclose(&v, val, None));
+    }
+
+    #[test]
+    fn test_is_zero() {
+        let zeros = Vector::zeros(5);
+        assert!(zeros.is_zero());
+        let non_zeros = Vector::new(&[-3.5, -7., 0.5]);
+        assert!(!non_zeros.is_zero());
     }
 }
