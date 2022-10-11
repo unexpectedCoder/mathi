@@ -11,9 +11,15 @@ impl Vector {
     }
 
     pub fn zeros(size: &usize) -> Vector {
-        let mut v = Vec::new();
-        v.resize(*size, 0.);
-        Vector { arr: v }
+        let mut arr = Vec::new();
+        arr.resize(*size, 0.);
+        Vector { arr }
+    }
+
+    pub fn ones(size: &usize) -> Vector {
+        let mut arr = Vec::new();
+        arr.resize(*size, 1.);
+        Vector { arr }
     }
 
     pub fn size(&self) -> usize {
@@ -54,6 +60,13 @@ mod tests {
         let zv = Vector::zeros(&size);
         assert_eq!(zv.size(), size);
         assert!(Vector::isclose(&zv, 0., None));
+    }
+
+    #[test]
+    fn test_ones() {
+        let size = 7;
+        let ones = Vector::ones(&size);
+        assert!(Vector::isclose(&ones, 1., None));
     }
 
     #[test]
