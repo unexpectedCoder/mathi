@@ -10,18 +10,24 @@ impl Vector {
         Vector { arr: arr.to_owned() }
     }
 
-    pub fn full(size: &usize, value: &f64) -> Vector {
+    pub fn full(size: usize, value: f64) -> Vector {
         let mut arr = Vec::new();
-        arr.resize(*size, *value);
+        arr.resize(size, value);
         Vector { arr }
     }
 
-    pub fn zeros(size: &usize) -> Vector {
-        Self::full(size, &0.)
+    pub fn zeros(size: usize) -> Vector {
+        Self::full(size, 0.)
     }
 
-    pub fn ones(size: &usize) -> Vector {
-        Self::full(size, &1.)
+    pub fn ones(size: usize) -> Vector {
+        Self::full(size, 1.)
+    }
+
+    pub fn full_like(v: &Vector, value: f64) -> Vector {
+        let mut arr = Vec::new();
+        arr.resize(v.size(), value);
+        Vector { arr }
     }
 
     pub fn size(&self) -> usize {
@@ -44,7 +50,7 @@ impl Vector {
 }
 
 #[cfg(test)]
-mod tests {
+mod vector_tests {
     use super::*;
 
     #[test]
@@ -60,7 +66,7 @@ mod tests {
     fn test_full() {
         let size = 5;
         let value = 17.33;
-        let v = Vector::full(&size, &value);
+        let v = Vector::full(size, value);
         assert!(Vector::isclose(&v, value, None));
         assert_eq!(v.size(), size);
     }
@@ -68,15 +74,23 @@ mod tests {
     #[test]
     fn test_zeros() {
         let size = 5;
-        let zv = Vector::zeros(&size);
+        let zv = Vector::zeros(size);
         assert!(Vector::isclose(&zv, 0., None));
     }
 
     #[test]
     fn test_ones() {
         let size = 7;
-        let ones = Vector::ones(&size);
+        let ones = Vector::ones(size);
         assert!(Vector::isclose(&ones, 1., None));
+    }
+
+    #[test]
+    fn test_full_like() {
+        let v = Vector::new(&[-1., 2., 3.]);
+        let value = -1.5;
+        let new_v = Vector::full_like(&v, value);
+        assert!(Vector::isclose(&new_v, value, None));
     }
 
     #[test]
