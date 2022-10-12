@@ -91,7 +91,7 @@ impl Vector {
     /// # Examples
     /// 
     /// ```
-    /// use lwmath::vector::Vector;
+    /// use mathi::vector::Vector;
     /// 
     /// let init_arr = vec![1., 2., 3.];
     /// let v1 = Vector::new(&init_arr);
@@ -117,7 +117,7 @@ impl Vector {
     /// # Example
     /// 
     /// ```
-    /// use lwmath::vector::Vector;
+    /// use mathi::vector::Vector;
     /// 
     /// let mut array = [true, true, true];
     /// assert!(Vector::all(&array));
@@ -139,7 +139,7 @@ impl Vector {
     /// # Example
     /// 
     /// ```
-    /// use lwmath::vector::Vector;
+    /// use mathi::vector::Vector;
     /// 
     /// let mut array = [false, true, false];
     /// assert!(Vector::any(&array));
