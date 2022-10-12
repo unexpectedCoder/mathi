@@ -70,25 +70,26 @@ impl Vector {
     /// You must give the ``Option``-wrapped ``tol`` value (``Some(value)``)
     /// to set tolerance value or ``None`` to set the default tolerance.
     /// The tolerance parameter ``tol`` is ``1e-6`` by default.
-    pub fn isclose(v: &Vector, val: f64, tol: Option<f64>) -> bool {
+    pub fn isclose(a: &f64, b: &f64, tol: Option<f64>) -> bool {
         let tol = tol.unwrap_or(1e-6);
-        for vi in v.iter() {
-            if (*vi - val).abs() > tol {
-                return false;
-            }
-        }
-        true
+        (a - b).abs() < tol
     }
 
     /// Checks if a vector is a null vector.
     pub fn is_zero(&self) -> bool {
-        Self::isclose(self, 0., None)
+        let res = Self::compare_scalar(
+            self,
+            &0.,
+            |a, b| Vector::isclose(a, b, None)
+        );
+        Self::all(&res)
     }
 
     /// Compares two vectors ``v1`` and ``v2`` using pairs of their
     /// components for the ``condition`` closure.
+    /// Returns an array of booleans.
     /// 
-    /// # Examples
+    /// # Example
     /// 
     /// ```
     /// use mathi::vector::Vector;
@@ -112,6 +113,34 @@ impl Vector {
         res
     }
 
+    /// Compares a vector ``v`` components with a scalar ``val``
+    /// according to a ``condition`` closure.
+    /// Returns an array of booleans.
+    /// 
+    /// # Example
+    /// 
+    /// ```
+    /// use mathi::vector::Vector;
+    /// 
+    /// let init_arr = vec![1., 2., 3.];
+    /// let v = Vector::new(&init_arr);
+    /// let val = 5.;
+    /// let cmp_res = Vector::compare_scalar(&v, &val, |a, b| a < b);
+    /// assert!(Vector::all(&cmp_res));
+    /// let cmp_res = Vector::compare_scalar(&v, &val, |a, b| a == b);
+    /// assert!(!Vector::all(&cmp_res));
+    /// ```
+    pub fn compare_scalar<F>(v: &Vector, val: &f64, condition: F) -> Vec<bool>
+        where F: Fn(&f64, &f64) -> bool
+    {
+        let mut res = Vec::new();
+        res.resize(v.size(), false);
+        for (i, vi) in v.iter().enumerate() {
+            res[i] = condition(vi, val);
+        }
+        res
+    }
+
     /// Returns ``true`` if all components of the ``v`` array are ``true``.
     /// 
     /// # Example
@@ -124,14 +153,8 @@ impl Vector {
     /// array[1] = false;
     /// assert!(!Vector::all(&array));
     /// ```
-    pub fn all(v: &[bool]) -> bool
-    {
-        for flag in v {
-            if !*flag {
-                return false;
-            }
-        }
-        true
+    pub fn all(v: &[bool]) -> bool {
+        v.iter().all(|&flag| flag)
     }
     
     /// Returns ``true`` if any of the ``v`` array components is ``true``.
@@ -146,16 +169,23 @@ impl Vector {
     /// array[1] = false;
     /// assert!(!Vector::any(&array));
     /// ```
-    pub fn any(v: &[bool]) -> bool
-    {
-        for flag in v {
-            if *flag {
-                return true;
-            }
-        }
-        false
+    pub fn any(v: &[bool]) -> bool {
+        v.iter().any(|&flag| flag)
     }
 }
+
+impl PartialEq for Vector {
+    fn eq(&self, other: &Self) -> bool {
+        let v = Vector::compare(
+            self,
+            other,
+            |a, b| Vector::isclose(a, b, None)
+        );
+        Vector::all(&v)
+    }
+}
+
+impl Eq for Vector {}
 
 #[cfg(test)]
 mod tests;

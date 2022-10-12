@@ -14,22 +14,32 @@ fn test_full() {
     let size = 5;
     let value = 17.33;
     let v = Vector::full(size, value);
-    assert!(Vector::isclose(&v, value, None));
+    let cmp_res = Vector::compare_scalar(
+        &v,
+        &value,
+        |a, b| Vector::isclose(a, b, None)
+    );
+    assert!(Vector::all(&cmp_res));
     assert_eq!(v.size(), size);
 }
 
 #[test]
 fn test_zeros() {
     let size = 5;
-    let zv = Vector::zeros(size);
-    assert!(Vector::isclose(&zv, 0., None));
+    let zeros = Vector::zeros(size);
+    assert!(zeros.is_zero());
 }
 
 #[test]
 fn test_ones() {
     let size = 7;
     let ones = Vector::ones(size);
-    assert!(Vector::isclose(&ones, 1., None));
+    let cmp_res = Vector::compare_scalar(
+        &ones,
+        &1.,
+        |a, b| Vector::isclose(a, b, None)
+    );
+    assert!(Vector::all(&cmp_res));
 }
 
 #[test]
@@ -37,7 +47,12 @@ fn test_full_like() {
     let v = Vector::new(&[-1., 2., 3.]);
     let value = -1.5;
     let new_v = Vector::full_like(&v, value);
-    assert!(Vector::isclose(&new_v, value, None));
+    let cmp_res = Vector::compare_scalar(
+        &new_v,
+        &value,
+        |a, b| Vector::isclose(&a, &b, None)
+    );
+    assert!(Vector::all(&cmp_res));
     assert_eq!(new_v.size(), v.size());
 }
 
@@ -45,7 +60,7 @@ fn test_full_like() {
 fn test_zeros_like() {
     let v = Vector::new(&[-1., 2., 3.]);
     let new_v = Vector::zeros_like(&v);
-    assert!(Vector::isclose(&new_v, 0., None));
+    assert!(new_v.is_zero());
     assert_eq!(new_v.size(), v.size());
 }
 
@@ -53,7 +68,12 @@ fn test_zeros_like() {
 fn test_ones_like() {
     let v = Vector::new(&[-1., 2., 3.]);
     let new_v = Vector::ones_like(&v);
-    assert!(Vector::isclose(&new_v, 1., None));
+    let cmp_res = Vector::compare_scalar(
+        &new_v,
+        &1.,
+        |a, b| Vector::isclose(&a, &b, None)
+    );
+    assert!(Vector::all(&cmp_res));
     assert_eq!(new_v.size(), v.size());
 }
 
@@ -65,13 +85,12 @@ fn test_size() {
 
 #[test]
 fn test_isclose() {
-    let val = 19.1;
-    let v = Vector::new(&[1., 2., 3.]);
-    assert!(!Vector::isclose(&v, val, None));
-    let v = Vector::new(&[1., 2., 3. * (val / 3.)]);
-    assert!(!Vector::isclose(&v, val, Some(1e-3)));
-    let v = Vector::new(&[val, val, 3. * (val / 3.)]);
-    assert!(Vector::isclose(&v, val, None));
+    let a = 19.1;
+    let b = 19.12;
+    assert!(!Vector::isclose(&a, &b, None));
+    assert!(Vector::isclose(&a, &b, Some(0.1)));
+    let a = 19.12;
+    assert!(Vector::isclose(&a, &b, None));
 }
 
 #[test]
@@ -201,4 +220,40 @@ fn test_compare_any() {
     let res =
         Vector::compare(&v1, &v2, |a, b| a != b);
     assert!(Vector::any(&res));
+}
+
+#[test]
+fn test_compare_scalar_eq() {
+    // Part #1
+    let val = 5.;
+    let v = Vector::full(3, val);
+    let cmp_res =
+        Vector::compare_scalar(&v, &val, |a, b| a == b);
+    assert!(Vector::all(&cmp_res));
+    let cmp_res =
+        Vector::compare_scalar(&v, &val, |a, b| a != b);
+    assert!(!Vector::all(&cmp_res));
+    // Part #2
+    let arr = [1., 2., 3.];
+    let v = Vector::new(&arr);
+    let val = 5.;
+    let cmp_res =
+        Vector::compare_scalar(&v, &val, |a, b| a < b);
+    assert!(Vector::all(&cmp_res));
+    let cmp_res =
+        Vector::compare_scalar(&v, &val, |a, b| a > b);
+    assert!(!Vector::all(&cmp_res));
+    let cmp_res =
+        Vector::compare_scalar(&v, &val, |a, b| a != b);
+    assert!(Vector::all(&cmp_res));
+}
+
+#[test]
+fn test_eq() {
+    let arr = [1., 2., 3.];
+    let v1 = Vector::new(&arr);
+    let v2 = Vector::new(&arr);
+    assert!(v1 == v2);
+    let v3 = Vector::new(&[1., -7.2, 2.4]);
+    assert!(v3 != v1);
 }
