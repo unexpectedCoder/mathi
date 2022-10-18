@@ -82,7 +82,8 @@ pub fn ones_like(v: &Vector) -> Vector
 /// assert!(!vector::all(&cmp_res));
 /// ```
 pub fn compare_scalar<F>(v: &Vector, val: f64, condition: F) -> Vec<bool>
-where F: Fn(&f64, &f64) -> bool
+where
+    F: Fn(&f64, &f64) -> bool
 {
     let mut res = Vec::new();
     res.resize(v.size(), false);
@@ -108,7 +109,8 @@ where F: Fn(&f64, &f64) -> bool
 /// assert!(vector::all(&cmp_res));
 /// ```
 pub fn compare<F>(v1: &Vector, v2: &Vector, condition: F) -> Vec<bool>
-where F: Fn(&f64, &f64) -> bool
+where
+    F: Fn(&f64, &f64) -> bool
 {
     let mut res = Vec::new();
     res.resize(v1.size(), false);
@@ -176,6 +178,23 @@ impl Vector {
             |a, b| mtc::isclose(*a, *b, None)
         );
         all(&res)
+    }
+
+    /// See documentation for the [compare](compare) function of the module.
+    pub fn compare<F>(&self, other: &Vector, condition: F) -> Vec<bool>
+    where
+        F: Fn(&f64, &f64) -> bool
+    {
+        compare(self, other, condition)
+    }
+
+    /// See documentation for the [compare_scalar](compare_scalar) function
+    /// of the module.
+    pub fn compare_scalar<F>(&self, val: f64, condition: F) -> Vec<bool>
+    where
+        F: Fn(&f64, &f64) -> bool
+    {
+        compare_scalar(self, val, condition)
     }
 }
 
