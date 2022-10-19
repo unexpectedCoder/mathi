@@ -31,6 +31,7 @@ fn test_zeros()
 {
     let size = 5;
     let zeros = zeros(size);
+    assert!(is_zero(&zeros));
     assert!(zeros.is_zero());
 }
 

@@ -156,6 +156,17 @@ pub fn any(v: &[bool]) -> bool
     v.iter().any(|&flag| flag)
 }
 
+/// Checks if a vector is a null vector.
+pub fn is_zero(v: &Vector) -> bool
+{
+    let res = compare_scalar(
+        v,
+        0.,
+        |a, b| mtc::isclose(*a, *b, None)
+    );
+    all(&res)
+}
+
 impl Vector {
     /// Returns the vector size.
     pub fn size(&self) -> usize
@@ -169,18 +180,13 @@ impl Vector {
         self.arr.iter()
     }
 
-    /// Checks if a vector is a null vector.
+    /// See [is_zero](is_zero).
     pub fn is_zero(&self) -> bool
     {
-        let res = compare_scalar(
-            self,
-            0.,
-            |a, b| mtc::isclose(*a, *b, None)
-        );
-        all(&res)
+        is_zero(self)
     }
 
-    /// See documentation for the [compare](compare) function of the module.
+    /// See [compare](compare).
     pub fn compare<F>(&self, other: &Vector, condition: F) -> Vec<bool>
     where
         F: Fn(&f64, &f64) -> bool
@@ -188,8 +194,7 @@ impl Vector {
         compare(self, other, condition)
     }
 
-    /// See documentation for the [compare_scalar](compare_scalar) function
-    /// of the module.
+    /// See documentation [compare_scalar](compare_scalar).
     pub fn compare_scalar<F>(&self, val: f64, condition: F) -> Vec<bool>
     where
         F: Fn(&f64, &f64) -> bool
