@@ -167,6 +167,39 @@ pub fn is_zero(v: &Vector) -> bool
     all(&res)
 }
 
+/// Calculates the dot product of two vectors.
+/// 
+/// # Errors
+/// 
+/// Returns an `Err` instance if sizes of the vectors are not equal.
+/// 
+/// # Example
+/// 
+/// ```
+/// use mathi::vector;
+/// use mathi::mathicore as mtc;
+/// 
+/// let a = vector::new(&[1., 2., 3.]);
+/// let b = vector::new(&[-1., 1., -2.]);
+/// let res = vector::dot(&a, &b).unwrap();
+/// assert!(mtc::isclose(res, -5., None));
+/// ```
+/// 
+/// Math is [here](https://en.wikipedia.org/wiki/Dot_product).
+pub fn dot(a: &Vector, b: &Vector) -> Result<f64, String>
+{
+    if a.size() != b.size() {
+        return Err(
+            String::from("Vectors sizes must be equal to each other for the dot")
+        );
+    }
+    let mut res = 0.;
+    for (ai, bi) in a.iter().zip(b.iter()) {
+        res += ai * bi;
+    }
+    Ok(res)
+}
+
 impl Vector {
     /// Returns the vector size.
     pub fn size(&self) -> usize
@@ -200,6 +233,12 @@ impl Vector {
         F: Fn(&f64, &f64) -> bool
     {
         compare_scalar(self, val, condition)
+    }
+
+    /// See [dot](dot).
+    pub fn dot(&self, other: &Vector) -> Result<f64, String>
+    {
+        dot(self, other)
     }
 }
 

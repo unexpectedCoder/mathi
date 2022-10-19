@@ -268,3 +268,27 @@ fn test_eq()
     let v3 = new(&[1., -7.2, 2.4]);
     assert!(v3 != v1);
 }
+
+#[test]
+fn test_dot()
+{
+    let a = new(&[1., 2., 3.]);
+    let b = new(&[-1., 1., -2.]);
+    let test_res = -5.;
+    let res = dot(&a, &b).unwrap();
+    assert!(mtc::isclose(res, test_res, None));
+    let res = a.dot(&b).unwrap();
+    assert!(mtc::isclose(res, test_res, None));
+    // Square norm
+    assert!(mtc::isclose(a.dot(&a).unwrap(), 14., None));
+}
+
+#[test]
+fn test_invalid_dot()
+{
+    let a = new(&[1., 2., 3.]);
+    let b = new(&[-1., 1.]);
+    // Sizes of a and b are not equal to each other
+    assert_ne!(a.size(), b.size());
+    assert!(a.dot(&b).is_err());
+}
