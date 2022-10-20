@@ -12,6 +12,15 @@ fn test_new()
 }
 
 #[test]
+fn test_from()
+{
+    let arr = vec![1., 2., 3.];
+    let a = new(&arr);
+    let b = from(arr);
+    assert_eq!(a, b);
+}
+
+#[test]
 fn test_full()
 {
     let size = 5;

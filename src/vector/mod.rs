@@ -19,6 +19,14 @@ pub fn new(arr: &[f64]) -> Vector
     Vector { arr: arr.to_owned(), size: arr.len() }
 }
 
+/// Creates a new instance of the `Vector`
+/// using an initializing array `arr` **that is moved**.
+pub fn from(arr: Vec<f64>) -> Vector
+{
+    let size = arr.len();
+    Vector { arr, size }
+}
+
 /// Creates a vector with size `size`
 /// and filled with the given `value`.
 pub fn full(size: usize, value: f64) -> Vector
