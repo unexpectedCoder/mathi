@@ -292,3 +292,40 @@ fn test_invalid_dot()
     assert_ne!(a.size(), b.size());
     assert!(a.dot(&b).is_err());
 }
+
+#[test]
+fn test_index()
+{
+    let a = new(&[1., 2., 3.]);
+    assert_eq!(a[0], 1.);
+    assert_eq!(a[1], 2.);
+    assert_ne!(a[2], 0.);
+}
+
+#[test]
+#[should_panic]
+fn test_invalid_index()
+{
+    let a = new(&[1., 2., 3.]);
+    assert_eq!(a[100], 0.);
+}
+
+#[test]
+fn test_cross()
+{
+    let a = new(&[-1., 2., 0.]);
+    let b = new(&[1., 2., 3.]);
+    let test_res = new(&[6., 3., -4.]);
+    let res = cross(&a, &b).unwrap();
+    assert_eq!(res, test_res);
+    let res = a.cross(&b).unwrap();
+    assert_eq!(res, test_res);
+}
+
+#[test]
+fn test_invalid_cross()
+{
+    let a = new(&[-1., 2.]);
+    let b = new(&[1., 2.]);
+    assert!(cross(&a, &b).is_err());
+}

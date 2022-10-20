@@ -1,4 +1,5 @@
 use core::slice;
+use std::ops::Index;
 
 use crate::mathicore as mtc;
 
@@ -200,6 +201,40 @@ pub fn dot(a: &Vector, b: &Vector) -> Result<f64, String>
     Ok(res)
 }
 
+/// Calculates the cross product of two 3D vectors.
+/// 
+/// # Errors
+/// 
+/// Returns an `Err` instance when
+/// 1. sizes of the vectors are not equal to 3 or
+/// 2. sizes of the vectors are not equal to each other.
+/// 
+/// # Example
+/// 
+/// ```
+/// use mathi::vector;
+/// 
+/// let a = vector::new(&[-1., 2., 0.]);
+/// let b = vector::new(&[1., 2., 3.]);
+/// let test_res = vector::new(&[6., 3., -4.]);
+/// let res = vector::cross(&a, &b).unwrap();
+/// assert_eq!(res, test_res);
+/// ```
+/// 
+/// See math [here](https://en.wikipedia.org/wiki/Cross_product).
+pub fn cross(a: &Vector, b: &Vector) -> Result<Vector, String>
+{
+    if a.size() != 3 || a.size() != b.size() {
+        return Err(
+            String::from("Invalid vectors sizes for the cross product")
+        );
+    }
+    let s1 = a[1] * b[2] - a[2] * b[1];
+    let s2 = a[2] * b[0] - a[0] * b[2];
+    let s3 = a[0] * b[1] - a[1] * b[0];
+    Ok(Vector { arr: vec![s1, s2, s3], size: 3 })
+}
+
 impl Vector {
     /// Returns the vector size.
     pub fn size(&self) -> usize
@@ -240,6 +275,12 @@ impl Vector {
     {
         dot(self, other)
     }
+
+    /// See [cross](cross).
+    pub fn cross(&self, other: &Vector) -> Result<Self, String>
+    {
+        cross(self, other)
+    }
 }
 
 impl PartialEq for Vector {
@@ -254,6 +295,16 @@ impl PartialEq for Vector {
 }
 
 impl Eq for Vector {}
+
+impl Index<usize> for Vector
+{
+    type Output = f64;
+
+    fn index(&self, i: usize) -> &Self::Output
+    {
+        &self.arr[i]
+    }
+}
 
 #[cfg(test)]
 mod tests;
