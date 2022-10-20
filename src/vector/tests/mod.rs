@@ -347,3 +347,13 @@ fn test_add()
     let test_res = from(vec![3., 7., 1.5]);
     assert_eq!(a + b, test_res);
 }
+
+#[test]
+fn test_add_assign()
+{
+    let mut a = from(vec![1., 2., 3.]);
+    let b = from(vec![2., 5., -1.5]);
+    a += b;
+    let test_res = from(vec![3., 7., 1.5]);
+    assert_eq!(a, test_res);
+}

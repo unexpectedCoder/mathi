@@ -1,5 +1,5 @@
 use core::slice;
-use std::ops::{Add, Index};
+use std::ops::{Add, AddAssign, Index};
 
 use crate::mathicore as mtc;
 
@@ -323,11 +323,24 @@ impl Add for Vector
         if self.size() != rhs.size() {
             panic!("Sizes of vectors are not equal to each other");
         }
-        let mut arr = Vec::from_iter(self.arr);
+        let mut arr = Vec::from(self.arr);
         for (ai, ri) in arr.iter_mut().zip(rhs.iter()) {
             *ai += *ri;
         }
         from(arr)
+    }
+}
+
+impl AddAssign for Vector
+{
+    fn add_assign(&mut self, rhs: Self)
+    {
+        if self.size() != rhs.size() {
+            panic!("Sizes of vectors are not equal to each other");
+        }
+        for (i, x) in rhs.iter().enumerate() {
+            self.arr[i] += *x;
+        }
     }
 }
 
