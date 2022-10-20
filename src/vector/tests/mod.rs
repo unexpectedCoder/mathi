@@ -340,7 +340,7 @@ fn test_invalid_cross()
 }
 
 #[test]
-fn test_add()
+fn test_add_operator()
 {
     let a = from(vec![1., 2., 3.]);
     let b = from(vec![2., 5., -1.5]);
@@ -349,11 +349,47 @@ fn test_add()
 }
 
 #[test]
-fn test_add_assign()
+#[should_panic]
+fn test_invalid_add_operator()
+{
+    let a = from(vec![1., 2.]);
+    let b = from(vec![2., 5., -1.5]);
+    let _ = a + b;
+}
+
+#[test]
+fn test_add_assign_operator()
 {
     let mut a = from(vec![1., 2., 3.]);
     let b = from(vec![2., 5., -1.5]);
     a += b;
     let test_res = from(vec![3., 7., 1.5]);
     assert_eq!(a, test_res);
+}
+
+#[test]
+#[should_panic]
+fn test_invalid_add_assign_operator()
+{
+    let mut a = from(vec![1., 2.]);
+    let b = from(vec![2., 5., -1.5]);
+    a += b;
+}
+
+#[test]
+fn test_sub_operator()
+{
+    let a = from(vec![1., 2., 3.]);
+    let b = from(vec![2., 5., -1.5]);
+    let test_res = from(vec![-1., -3., 4.5]);
+    assert_eq!(a - b, test_res);
+}
+
+#[test]
+#[should_panic]
+fn test_invalid_sub_operator()
+{
+    let a = from(vec![0., -2.]);
+    let b = from(vec![2., 5., -1.5, 0.]);
+    let _ = a + b;
 }
