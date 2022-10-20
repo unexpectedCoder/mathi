@@ -338,3 +338,12 @@ fn test_invalid_cross()
     let b = new(&[1., 2.]);
     assert!(cross(&a, &b).is_err());
 }
+
+#[test]
+fn test_add()
+{
+    let a = from(vec![1., 2., 3.]);
+    let b = from(vec![2., 5., -1.5]);
+    let test_res = from(vec![3., 7., 1.5]);
+    assert_eq!(a + b, test_res);
+}

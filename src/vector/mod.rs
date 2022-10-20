@@ -1,5 +1,5 @@
 use core::slice;
-use std::ops::Index;
+use std::ops::{Add, Index};
 
 use crate::mathicore as mtc;
 
@@ -311,6 +311,23 @@ impl Index<usize> for Vector
     fn index(&self, i: usize) -> &Self::Output
     {
         &self.arr[i]
+    }
+}
+
+impl Add for Vector
+{
+    type Output = Vector;
+
+    fn add(self, rhs: Self) -> Vector
+    {
+        if self.size() != rhs.size() {
+            panic!("Sizes of vectors are not equal to each other");
+        }
+        let mut arr = Vec::from_iter(self.arr);
+        for (ai, ri) in arr.iter_mut().zip(rhs.iter()) {
+            *ai += *ri;
+        }
+        from(arr)
     }
 }
 
