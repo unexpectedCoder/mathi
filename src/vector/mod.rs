@@ -1,5 +1,5 @@
 use core::slice;
-use std::ops::{Add, AddAssign, Index, Sub};
+use std::ops::{Add, AddAssign, Index, Sub, SubAssign};
 
 use crate::mathicore as mtc;
 
@@ -358,6 +358,19 @@ impl Sub for Vector
             *ai -= *ri;
         }
         from(arr)
+    }
+}
+
+impl SubAssign for Vector
+{
+    fn sub_assign(&mut self, rhs: Self)
+    {
+        if self.size() != rhs.size() {
+            panic!("Sizes of vectors are not equal to each other");
+        }
+        for (i, x) in rhs.iter().enumerate() {
+            self.arr[i] -= *x;
+        }
     }
 }
 

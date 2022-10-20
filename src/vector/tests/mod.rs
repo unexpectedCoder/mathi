@@ -393,3 +393,22 @@ fn test_invalid_sub_operator()
     let b = from(vec![2., 5., -1.5, 0.]);
     let _ = a + b;
 }
+
+#[test]
+fn test_sub_assign_operator()
+{
+    let mut a = from(vec![1., 2., 3.]);
+    let b = from(vec![2., 5., -1.5]);
+    a -= b;
+    let test_res = from(vec![-1., -3., 4.5]);
+    assert_eq!(a, test_res);
+}
+
+#[test]
+#[should_panic]
+fn test_invalid_sub_assign_operator()
+{
+    let mut a = from(vec![2., 3.]);
+    let b = from(vec![2., 5., -1.5, 0., -7.2]);
+    a -= b;
+}
